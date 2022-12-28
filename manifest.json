@@ -1,0 +1,11 @@
+{
+    "id": "calibre",
+    "name": "Calibre",
+    "version": "0.1.0",
+    "minAppVersion": "0.16.0",
+    "description": "Read your books from Calibre",
+    "author": "johackim",
+    "authorUrl": "https://johackim.com",
+    "repo": "johackim/obsidian-calibre",
+    "isDesktopOnly": false
+}
