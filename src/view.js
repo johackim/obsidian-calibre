@@ -8,6 +8,7 @@ export class BookView extends ItemView {
     constructor(leaf, plugin) {
         super(leaf);
         this.plugin = plugin;
+        this.book = leaf.book || this.plugin.settings.books.find((book) => book.leaf === leaf.id);
     }
 
     getViewType() {
@@ -15,38 +16,45 @@ export class BookView extends ItemView {
     }
 
     getDisplayText() {
-        return this.plugin.activeBook?.title || 'Book';
+        return this.book?.title || 'Book';
     }
 
-    async refresh() {
-        const { activeBook } = this.plugin;
+    async refresh(refresh = false) {
+        if (!this.book) return;
 
-        if (!activeBook) return;
+        this.book.leaf = this.leaf.id;
+        this.plugin.saveSettings();
 
-        if (activeBook.format === 'PDF') {
-            const container = this.containerEl.children[1];
-            try {
-                const iframe = container.createEl('iframe');
-                iframe.src = activeBook.url;
-                iframe.width = '100%';
-                iframe.height = '100%';
-            } catch (e) {
-                const error = container.createDiv({ text: e.toString() });
-                error.style.color = 'var(--text-title-h1)';
-            }
+        const { title, format, location, url } = this.book;
+
+        if (format === 'PDF') {
+            this.root.render(
+                <iframe
+                    title={title}
+                    src={url}
+                    width="100%"
+                    height="100%"
+                />,
+            );
         }
 
-        if (activeBook.format === 'EPUB') {
+        if (format === 'EPUB') {
             this.root.render(
                 <EpubReader
-                    url={activeBook.url}
-                    location={activeBook.location}
-                    tocChanged={(toc) => {
-                        this.plugin.activeBook.toc = toc;
+                    url={url}
+                    refresh={refresh}
+                    location={location}
+                    locChanged={(currentLocation) => {
+                        this.book.location = currentLocation?.start;
+                        this.plugin.saveSettings();
                     }}
                 />,
             );
         }
+    }
+
+    async activeLeafChange() {
+        this.refresh(Date.now());
     }
 
     async onOpen() {
@@ -58,5 +66,7 @@ export class BookView extends ItemView {
                 this.refresh();
             }
         });
+
+        this.registerEvent(this.app.workspace.on('active-leaf-change', this.activeLeafChange.bind(this)));
     }
 }

@@ -7,7 +7,7 @@ const COLORS = {
     link: '#00AAAD',
 };
 
-const EpubReader = ({ url, location, tocChanged }) => {
+const EpubReader = ({ url, location, tocChanged, locChanged, refresh }) => {
     const ref = useRef();
     const [currentBook, setCurrentBook] = useState();
 
@@ -16,7 +16,7 @@ const EpubReader = ({ url, location, tocChanged }) => {
 
         const book = new Epub(url);
         setCurrentBook(book);
-    }, [location]);
+    }, [location, refresh]);
 
     useEffect(() => {
         if (!currentBook) return () => {};
@@ -52,6 +52,7 @@ const EpubReader = ({ url, location, tocChanged }) => {
             rendition.display();
         }
 
+        rendition.on('locationChanged', locChanged);
         rendition.on('keyup', handleKeys);
 
         currentBook.loaded.navigation.then(({ toc }) => {
@@ -70,6 +71,9 @@ const EpubReader = ({ url, location, tocChanged }) => {
 
 EpubReader.defaultProps = {
     tocChanged: () => {},
+    locChanged: () => {},
+    location: null,
+    refresh: false,
 };
 
 export default EpubReader;

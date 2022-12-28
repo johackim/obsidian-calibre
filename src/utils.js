@@ -22,7 +22,6 @@ export const getBooks = async (endpoint = 'http://localhost:8080', libraryName =
         const bookFormats = formats.map((format) => ({
             ...rest,
             format,
-            title: `${rest.title}.${format.toLowerCase()}`,
             url: `${endpoint}/get/${format}/${book.id}/Calibre${format === 'EPUB' ? '.epub' : ''}?content_disposition=inline`,
         }));
 

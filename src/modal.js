@@ -12,13 +12,16 @@ export default class Modal extends SuggestModal {
     }
 
     renderSuggestion(book, el) {
-        el.createEl('div', { text: book.title });
-        el.createEl('small', { text: book.author });
+        el.addClass('mod-complex');
+        const content = el.createDiv({ cls: 'suggestion-content' });
+        content.createEl('div', { text: book.title, cls: 'suggestion-title' });
+        content.createEl('small', { text: book.author });
+        const aux = el.createDiv({ cls: 'suggestion-aux' });
+        aux.createEl('kbd', { text: book.format });
     }
 
     onChooseSuggestion(book) {
-        this.plugin.activeBook = book;
         this.plugin.notice(`Opening ${book.title}`);
-        this.plugin.activateView();
+        this.plugin.activateView(book);
     }
 }

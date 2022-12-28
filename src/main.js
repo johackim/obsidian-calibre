@@ -42,8 +42,10 @@ export default class CalibrePlugin extends Plugin {
         this.app.workspace.detachLeavesOfType(VIEW_TYPE_TOC);
     }
 
-    async activateView() {
+    async activateView(book) {
         const leaf = this.app.workspace.getLeaf(true);
+
+        leaf.book = book;
 
         await leaf.setViewState({
             type: VIEW_TYPE_BOOK,
